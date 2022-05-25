@@ -14,6 +14,8 @@
 using namespace std;
 using namespace cv;
 
+
+
 int main()
 {
 
@@ -21,7 +23,8 @@ int main()
 	//std::string filename = "D:/Code/opencv_test/opencv_test/opencv_test/20213570501_GOES16-ABI-CONUS-07-2500x1500.jpg";
 	//std::string filename = "D:/Code/opencv_test/opencv_test/opencv_test/blackmarble_2016_americas_composite.png";
 	//std::string filename = "D:/Code/opencv_test/opencv_test/opencv_test/shapes.png";
-	std::string filename = "D:/Code/opencv_test/opencv_test/opencv_test/stars.png";
+	//std::string filename = "D:/Code/opencv_test/opencv_test/opencv_test/stars.png";
+	std::string filename = "D:/Code/opencv_test/opencv_test/opencv_test/GOES_E_test.png";
 
 	Mat img = imread(filename, IMREAD_GRAYSCALE);
 
@@ -37,33 +40,37 @@ int main()
 	cv::cuda::GpuMat src, edges, circles;
 	src.upload(img);
 
-	cv::Ptr <cv::cuda::CannyEdgeDetector> cannyDetector = cv::cuda::createCannyEdgeDetector(500, 1000);
+	cv::Ptr <cv::cuda::CannyEdgeDetector> cannyDetector = cv::cuda::createCannyEdgeDetector(10, 100);
 	cannyDetector->detect(src, edges);
 
-	cv::Ptr < cv::cuda::HoughCirclesDetector> circleDetector = cv::cuda::createHoughCirclesDetector(1, 20, 500, 1, 1, 2);
-	circleDetector->detect(src, circles);
+	//cv::Ptr < cv::cuda::HoughCirclesDetector> circleDetector = cv::cuda::createHoughCirclesDetector(1, 20, 500, 1, 1, 2);
+	//circleDetector->detect(edges, circles);
 
 	cv::Mat result, edge_result;
-	circles.download(result);
+	//circles.download(result);
 
 	edges.download(edge_result);
 	
-	vector<Vec3f> circles_final = result;
-	//Mat ouput_noImg;
-	for (size_t i = 0; i < circles_final.size(); i++)
-	{
-		Vec3i c = circles_final[i];
-		Point center = Point(c[0], c[1]);
-		std::cout << center << std::endl;
-		// circle center
-		circle(img, center, 1, Scalar(0, 100, 100), 3, LINE_AA);
-		// circle outline
-		int radius = c[2];
-		circle(img, center, radius, Scalar(255, 0, 255), 3, LINE_AA);
-	}
+	//vector<Vec3f> circles_final = edge_result;
 
-	cv::imshow("result", img);
+	Mat edge_color, img_color;
+	//Mat mask;
+	
+	//note need to mask img not the edges
+	//threshold(edge_result, mask, 255, 255, THRESH_BINARY_INV | THRESH_OTSU);
+	//edge_result.setTo(Scalar(0, 0, 255), mask);
+
+
+	applyColorMap(edge_result, edge_color, COLORMAP_PLASMA);
+	applyColorMap(img, img_color, COLORMAP_BONE);
+
+	Mat output;
+	addWeighted(edge_color,1, img_color,1,0,output);
+
+	cv::imwrite("output.jpg", output);
+	cv::imshow("result", output);
 	cv::waitKey();
+
 
 	return 0;
 }

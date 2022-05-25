@@ -18,14 +18,8 @@ include_directories(
 )
  
 # Add source to this project's executable.
-add_executable (opencv_test ${CXX_SRCS} ${OPEN_CV_LIBS} )
+add_executable (opencv_test ${CXX_SRCS})
 
-#target_link_libraries( opencv_test
-#	"D:/Code/vcpkg/Microsoft/vcpkg/installed/x64-windows/lib/opencv_core.lib"
-#	"D:/Code/vcpkg/Microsoft/vcpkg/installed/x64-windows/lib/opencv_highgui.lib"
-#	"D:/Code/vcpkg/Microsoft/vcpkg/installed/x64-windows/lib/opencv_imgcodecs.lib"
-#	"D:/Code/vcpkg/Microsoft/vcpkg/installed/x64-windows/lib/opencv_imgproc.lib"
-#)
 target_link_libraries( opencv_test
 	opencv_core
 	opencv_highgui
